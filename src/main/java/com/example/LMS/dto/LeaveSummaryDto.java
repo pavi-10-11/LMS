@@ -1,36 +1,29 @@
 package com.example.LMS.dto;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class LeaveSummaryDto {
-
-    private String month;
-    private Map<String, Integer> leaveCounts = new HashMap<>();
+    private String monthKey;
+    private Map<String, Integer> leaveCounts = new LinkedHashMap<>();
 
     public LeaveSummaryDto() {}
 
-    public LeaveSummaryDto(String month) {
-        this.month = month;
+    public LeaveSummaryDto(String monthKey) {
+        this.monthKey = monthKey;
     }
 
-    public String getMonth() {
-        return month;
+    public String getMonthKey() {
+        return monthKey;
     }
-
-    public void setMonth(String month) {
-        this.month = month;
+    public void setMonthKey(String monthKey) {
+        this.monthKey = monthKey;
     }
 
     public Map<String, Integer> getLeaveCounts() {
         return leaveCounts;
     }
-
     public void setLeaveCounts(Map<String, Integer> leaveCounts) {
-        if (leaveCounts == null) {
-            this.leaveCounts = new HashMap<>();
-        } else {
-            this.leaveCounts = leaveCounts;
-        }
+        this.leaveCounts = leaveCounts;
     }
 }

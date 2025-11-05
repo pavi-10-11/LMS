@@ -15,10 +15,9 @@ public interface LeaveRepository extends JpaRepository<Leave, Long> {
     List<Leave> findByEmployeeAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
             Employee employee, LocalDate rangeEnd, LocalDate rangeStart);
 
-
     List<Leave> findByEmployeeEmployeeId(String employeeId);
 
-
     List<Leave> findByEmployeeEmployeeIdOrderByStartDateDesc(String employeeId);
+
     List<Leave> findByEmployee(Employee employee);
 }

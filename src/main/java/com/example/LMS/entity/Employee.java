@@ -1,14 +1,18 @@
 package com.example.LMS.entity;
 
 import jakarta.persistence.*;
-
 import java.util.List;
 
 @Entity
-@Table(name = "Employee")
+@Table(name = "employees")
 public class Employee {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+
+    @Column(name = "employee_id", unique = true, nullable = false)
     private String employeeId;
 
     private String firstName;
@@ -16,23 +20,23 @@ public class Employee {
     private String email;
     private String phoneNumber;
     private String dept;
-    @OneToMany(mappedBy = "employee")
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
     private List<Leave> leaves;
+
     public Employee() {}
 
-    public Employee(String employeeId, String firstName, String lastName, String email, String phoneNumber, String dept) {
-        this.employeeId = employeeId;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.dept = dept;
+
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getEmployeeId() {
         return employeeId;
     }
-
     public void setEmployeeId(String employeeId) {
         this.employeeId = employeeId;
     }
@@ -40,7 +44,6 @@ public class Employee {
     public String getFirstName() {
         return firstName;
     }
-
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
@@ -48,7 +51,6 @@ public class Employee {
     public String getLastName() {
         return lastName;
     }
-
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
@@ -56,7 +58,6 @@ public class Employee {
     public String getEmail() {
         return email;
     }
-
     public void setEmail(String email) {
         this.email = email;
     }
@@ -64,7 +65,6 @@ public class Employee {
     public String getPhoneNumber() {
         return phoneNumber;
     }
-
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
@@ -72,23 +72,14 @@ public class Employee {
     public String getDept() {
         return dept;
     }
-
     public void setDept(String dept) {
         this.dept = dept;
     }
 
-
-    @Override
-    public String toString() {
-        return "Employee{" +
-                "employeeId=" + employeeId +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", dept='" + dept + '\'' +
-                '}';
+    public List<Leave> getLeaves() {
+        return leaves;
     }
-
-
+    public void setLeaves(List<Leave> leaves) {
+        this.leaves = leaves;
+    }
 }
