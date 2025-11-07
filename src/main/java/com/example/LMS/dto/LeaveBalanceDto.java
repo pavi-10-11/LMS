@@ -1,6 +1,7 @@
 package com.example.LMS.dto;
 
 public class LeaveBalanceDto {
+
     private String employeeId;
     private String employeeName;
     private int totalLeaves;
@@ -10,6 +11,7 @@ public class LeaveBalanceDto {
     private int remainingLeavesMonth;
 
     public LeaveBalanceDto() {}
+
 
     public LeaveBalanceDto(String employeeId, String employeeName,
                            int totalLeaves,
@@ -25,42 +27,57 @@ public class LeaveBalanceDto {
     }
 
 
+    public LeaveBalanceDto(String employeeId, String employeeName, String leaveTypeName,
+                           int totalDaysPerYear, int usedLeavesYear, int remainingLeavesYear) {
+        this.employeeId = employeeId;
+        this.employeeName = employeeName + " (" + leaveTypeName + ")";
+        this.totalLeaves = totalDaysPerYear;
+        this.usedLeavesYear = usedLeavesYear;
+        this.remainingLeavesYear = remainingLeavesYear;
+        this.usedLeavesMonth = 0;
+        this.remainingLeavesMonth = 0;
+    }
+
+
     public String getEmployeeId() {
         return employeeId;
     }
     public void setEmployeeId(String employeeId) {
         this.employeeId = employeeId;
     }
-    public String getEmployeeName() {
-        return employeeName;
-    }
+
     public void setEmployeeName(String employeeName) {
         this.employeeName = employeeName;
     }
+
     public int getTotalLeaves() {
         return totalLeaves;
     }
     public void setTotalLeaves(int totalLeaves) {
         this.totalLeaves = totalLeaves;
     }
+
     public int getUsedLeavesYear() {
         return usedLeavesYear;
     }
     public void setUsedLeavesYear(int usedLeavesYear) {
         this.usedLeavesYear = usedLeavesYear;
     }
+
     public int getRemainingLeavesYear() {
         return remainingLeavesYear;
     }
     public void setRemainingLeavesYear(int remainingLeavesYear) {
         this.remainingLeavesYear = remainingLeavesYear;
     }
+
     public int getUsedLeavesMonth() {
         return usedLeavesMonth;
     }
     public void setUsedLeavesMonth(int usedLeavesMonth) {
         this.usedLeavesMonth = usedLeavesMonth;
     }
+
     public int getRemainingLeavesMonth() {
         return remainingLeavesMonth;
     }

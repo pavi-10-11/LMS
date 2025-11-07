@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/leave-types")
+@RequestMapping("/api/leavetypes")
 
 public class LeaveTypeController {
     private final LeaveTypeService leaveTypeService;
@@ -29,7 +29,7 @@ public class LeaveTypeController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<LeaveType> createLeaveType(@RequestBody LeaveType leaveType) {
         LeaveType created = leaveTypeService.save(leaveType);
         return ResponseEntity.ok(created);
