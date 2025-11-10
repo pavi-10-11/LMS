@@ -29,6 +29,9 @@ public class LeaveType {
         this.totalDaysPerYear = totalDaysPerYear;
     }
 
+    public LeaveType() {
+
+    }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
