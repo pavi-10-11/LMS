@@ -18,20 +18,15 @@ public class EmployeeController {
         this.repo = repo;
     }
 
-
     @GetMapping
     public ResponseEntity<List<Employee>> getAll() {
         return ResponseEntity.ok(repo.findAll());
     }
 
-
-
     @PostMapping
     public ResponseEntity<Employee> create(@RequestBody Employee emp) {
         return ResponseEntity.ok(repo.save(emp));
     }
-
-
 
     @GetMapping("/{employeeId}")
     public ResponseEntity<Employee> getByEmployeeId(@PathVariable String employeeId) {
@@ -39,8 +34,6 @@ public class EmployeeController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-
-
 
     @PutMapping("/{employeeId}")
     public ResponseEntity<Employee> update(@PathVariable String employeeId,
@@ -50,12 +43,12 @@ public class EmployeeController {
                     existing.setFirstName(details.getFirstName());
                     existing.setLastName(details.getLastName());
                     existing.setEmail(details.getEmail());
-                    existing.setId(details.getId());
+                    existing.setDept(details.getDept());
+                    existing.setPhoneNumber(details.getPhoneNumber());
                     return ResponseEntity.ok(repo.save(existing));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
-
 
     @DeleteMapping("/{employeeId}")
     public ResponseEntity<Object> delete(@PathVariable String employeeId) {

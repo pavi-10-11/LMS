@@ -10,7 +10,9 @@ public class LeaveType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false)
     private String name;
+    
     private String description;
 
     private int maxDaysPerYear;
@@ -30,23 +32,42 @@ public class LeaveType {
     }
 
     public LeaveType() {
-
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() { 
+        return id; 
+    }
+    public void setId(Long id) { 
+        this.id = id; 
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() { 
+        return name; 
+    }
+    public void setName(String name) { 
+        this.name = name; 
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getDescription() { 
+        return description; 
+    }
+    public void setDescription(String description) { 
+        this.description = description; 
+    }
 
-    public int getMaxDaysPerYear() { return maxDaysPerYear; }
-    public void setMaxDaysPerYear(int maxDaysPerYear) { this.maxDaysPerYear = maxDaysPerYear; }
+    public int getMaxDaysPerYear() { 
+        return maxDaysPerYear; 
+    }
+    public void setMaxDaysPerYear(int maxDaysPerYear) { 
+        this.maxDaysPerYear = maxDaysPerYear; 
+    }
 
-    public int getMaxDaysPerMonth() { return maxDaysPerMonth; }
-    public void setMaxDaysPerMonth(int maxDaysPerMonth) { this.maxDaysPerMonth = maxDaysPerMonth; }
+    public int getMaxDaysPerMonth() { 
+        return maxDaysPerMonth; 
+    }
+    public void setMaxDaysPerMonth(int maxDaysPerMonth) { 
+        this.maxDaysPerMonth = maxDaysPerMonth; 
+    }
 
     public int getTotalDaysPerYear() {
         return totalDaysPerYear;

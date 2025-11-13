@@ -1,5 +1,6 @@
 package com.example.LMS.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -11,7 +12,6 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @Column(name = "employee_id", unique = true, nullable = false)
     private String employeeId;
 
@@ -22,10 +22,10 @@ public class Employee {
     private String dept;
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Leave> leaves;
 
     public Employee() {}
-
 
     public Long getId() {
         return id;

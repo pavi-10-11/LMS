@@ -9,7 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/leavetypes")
-
+@CrossOrigin(origins = "*")
 public class LeaveTypeController {
     private final LeaveTypeService leaveTypeService;
 
@@ -29,7 +29,7 @@ public class LeaveTypeController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<LeaveType> createLeaveType(@RequestBody LeaveType leaveType) {
         LeaveType created = leaveTypeService.save(leaveType);
         return ResponseEntity.ok(created);
@@ -42,6 +42,9 @@ public class LeaveTypeController {
                 .map(existing -> {
                     existing.setName(leaveType.getName());
                     existing.setDescription(leaveType.getDescription());
+                    existing.setMaxDaysPerYear(leaveType.getMaxDaysPerYear());
+                    existing.setMaxDaysPerMonth(leaveType.getMaxDaysPerMonth());
+                    existing.setTotalDaysPerYear(leaveType.getTotalDaysPerYear());
                     LeaveType saved = leaveTypeService.save(existing);
                     return ResponseEntity.ok(saved);
                 })

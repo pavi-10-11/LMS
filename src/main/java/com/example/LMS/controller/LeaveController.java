@@ -68,7 +68,6 @@ public class LeaveController {
                     existing.setStartDate(leave.getStartDate());
                     existing.setEndDate(leave.getEndDate());
                     existing.setReason(leave.getReason());
-                    existing.setId(id);
                     Leave saved = leaveService.save(existing, employeeId, leaveTypeId);
                     return ResponseEntity.ok(saved);
                 })

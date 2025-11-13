@@ -1,5 +1,6 @@
 package com.example.LMS.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -18,6 +19,7 @@ public class Leave {
 
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)
+    @JsonBackReference
     private Employee employee;
 
     @ManyToOne
@@ -30,7 +32,6 @@ public class Leave {
         if (startDate == null || endDate == null) return 0;
         return (int) (ChronoUnit.DAYS.between(startDate, endDate) + 1);
     }
-
 
     public Long getId() {
         return id;

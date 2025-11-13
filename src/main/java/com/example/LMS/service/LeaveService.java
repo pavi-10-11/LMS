@@ -29,18 +29,24 @@ public class LeaveService {
     @Autowired
     private LeaveTypeRepository leaveTypeRepository;
 
-
     public List<Leave> findAll() {
         return leaveRepository.findAll();
     }
-
 
     public Optional<Leave> findById(Long id) {
         return leaveRepository.findById(id);
     }
 
-
     public Leave save(Leave leave, String employeeId, Long leaveTypeId) {
+        // Validate dates
+        if (leave.getStartDate() == null || leave.getEndDate() == null) {
+            throw new IllegalArgumentException("Start date and end date are required");
+        }
+        
+        if (leave.getEndDate().isBefore(leave.getStartDate())) {
+            throw new IllegalArgumentException("End date cannot be before start date");
+        }
+
         Employee employee = employeeRepository.findByEmployeeId(employeeId)
                 .orElseThrow(() -> new IllegalArgumentException("Employee not found with ID: " + employeeId));
 
@@ -52,21 +58,20 @@ public class LeaveService {
 
         long daysRequested = ChronoUnit.DAYS.between(leave.getStartDate(), leave.getEndDate()) + 1;
 
-
+        
         int usedYear = getUsedDaysInYear(employee, leaveType, leave.getStartDate().getYear());
         if (usedYear + daysRequested > leaveType.getTotalDaysPerYear()) {
-            throw new IllegalArgumentException("Exceeded annual limit for " + leaveType.getName());
+            throw new IllegalArgumentException("Exceeded annual limit (" + leaveType.getTotalDaysPerYear() + " days) for " + leaveType.getName());
         }
 
-
+       
         int usedMonth = getUsedDaysInMonth(employee, leaveType, leave.getStartDate());
-        if (usedMonth + daysRequested > 2) {
-            throw new IllegalArgumentException("Exceeded monthly limit (2 days) for " + leaveType.getName());
+        if (usedMonth + daysRequested > leaveType.getMaxDaysPerMonth()) {
+            throw new IllegalArgumentException("Exceeded monthly limit (" + leaveType.getMaxDaysPerMonth() + " days) for " + leaveType.getName());
         }
 
         return leaveRepository.save(leave);
     }
-
 
     private int getUsedDaysInMonth(Employee employee, LeaveType type, LocalDate date) {
         List<Leave> monthlyLeaves = leaveRepository.findByEmployee_EmployeeId(employee.getEmployeeId());
@@ -78,7 +83,6 @@ public class LeaveService {
                 .sum();
     }
 
-
     private int getUsedDaysInYear(Employee employee, LeaveType type, int year) {
         List<Leave> yearlyLeaves = leaveRepository.findByEmployee_EmployeeId(employee.getEmployeeId());
         return yearlyLeaves.stream()
@@ -89,6 +93,9 @@ public class LeaveService {
     }
 
     public void deleteById(Long id) {
+        if (!leaveRepository.existsById(id)) {
+            throw new IllegalArgumentException("Leave not found with ID: " + id);
+        }
         leaveRepository.deleteById(id);
     }
 
@@ -97,15 +104,14 @@ public class LeaveService {
         return leaves.stream().map(l -> new EmployeeLeaveResponseDto(
                 l.getId(),
                 l.getEmployee().getEmployeeId(),
-                l.getEmployee().getFirstName() + " " + l.getEmployee().getLastName(),
-                l.getLeaveType().getName(),
+                l.getEmployee().getFirstName(),
+                l.getEmployee().getLastName(),
                 l.getStartDate(),
                 l.getEndDate(),
-                l.getReason(),
+                l.getLeaveType().getName(),
                 (int) ChronoUnit.DAYS.between(l.getStartDate(), l.getEndDate()) + 1
         )).collect(Collectors.toList());
     }
-
 
     public List<LeaveSummaryDto> getMonthlyLeaveSummary() {
         List<Leave> leaves = leaveRepository.findAll();
@@ -119,28 +125,34 @@ public class LeaveService {
                 .collect(Collectors.toList());
     }
 
-
     public LeaveBalanceDto getLeaveBalanceSummary(Employee employee, LocalDate ref) {
         List<Leave> leaves = leaveRepository.findByEmployee_EmployeeId(employee.getEmployeeId());
-
-        int totalPerYear = leaves.stream()
-                .map(l -> l.getLeaveType().getTotalDaysPerYear())
-                .findFirst().orElse(24);
-
+        
+       
+        List<LeaveType> leaveTypes = leaveTypeRepository.findAll();
+        int totalPerYear = leaveTypes.stream()
+                .mapToInt(LeaveType::getTotalDaysPerYear)
+                .sum();
+        
         int usedYear = leaves.stream()
                 .filter(l -> l.getStartDate().getYear() == ref.getYear())
                 .mapToInt(l -> (int) ChronoUnit.DAYS.between(l.getStartDate(), l.getEndDate()) + 1)
                 .sum();
-
+        
         int remainingYear = Math.max(0, totalPerYear - usedYear);
-
+        
+        int maxDaysPerMonth = leaveTypes.stream()
+                .mapToInt(LeaveType::getMaxDaysPerMonth)
+                .sum();
+        
         int usedMonth = leaves.stream()
-                .filter(l -> l.getStartDate().getMonthValue() == ref.getMonthValue())
+                .filter(l -> l.getStartDate().getMonthValue() == ref.getMonthValue()
+                        && l.getStartDate().getYear() == ref.getYear())
                 .mapToInt(l -> (int) ChronoUnit.DAYS.between(l.getStartDate(), l.getEndDate()) + 1)
                 .sum();
-
-        int remainingMonth = Math.max(0, 2 - usedMonth); // 2 days limit per month
-
+        
+        int remainingMonth = Math.max(0, maxDaysPerMonth - usedMonth);
+        
         return new LeaveBalanceDto(
                 employee.getEmployeeId(),
                 employee.getFirstName() + " " + employee.getLastName(),
@@ -152,22 +164,27 @@ public class LeaveService {
         );
     }
 
-
     public int getRemainingMonthlyBalance(Employee employee, LocalDate ref) {
         List<LeaveType> leaveTypes = leaveTypeRepository.findAll();
+        int maxMonthlyTotal = leaveTypes.stream()
+                .mapToInt(LeaveType::getMaxDaysPerMonth)
+                .sum();
         int used = 0;
         for (LeaveType type : leaveTypes) {
             used += getUsedDaysInMonth(employee, type, ref);
         }
-        return Math.max(0, 2 - used);
+        return Math.max(0, maxMonthlyTotal - used);
     }
 
     public int getRemainingAnnualBalance(Employee employee, LocalDate ref) {
         List<LeaveType> leaveTypes = leaveTypeRepository.findAll();
+        int maxAnnualTotal = leaveTypes.stream()
+                .mapToInt(LeaveType::getTotalDaysPerYear)
+                .sum();
         int used = 0;
         for (LeaveType type : leaveTypes) {
             used += getUsedDaysInYear(employee, type, ref.getYear());
         }
-        return Math.max(0, 24 - used);
+        return Math.max(0, maxAnnualTotal - used);
     }
 }
