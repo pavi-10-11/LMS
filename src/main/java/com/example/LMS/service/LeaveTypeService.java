@@ -29,12 +29,13 @@ public class LeaveTypeService {
             throw new IllegalArgumentException("Leave type name cannot be null or empty");
         }
 
-        
+       
         if (leaveType.getId() == null && leaveTypeRepository.existsByName(leaveType.getName())) {
             throw new LeavesException("Leave type with name '" + leaveType.getName() + "' already exists");
         }
 
-       
+     
+        if (leaveType.getId() != null) {
             Optional<LeaveType> existing = leaveTypeRepository.findById(leaveType.getId());
             if (existing.isPresent() && !existing.get().getName().equals(leaveType.getName())) {
                 if (leaveTypeRepository.existsByName(leaveType.getName())) {
