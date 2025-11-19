@@ -2,6 +2,8 @@ package com.example.LMS.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+
 import java.util.List;
 
 @Entity
@@ -12,13 +14,30 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Employee ID is required")
     @Column(name = "employee_id", unique = true, nullable = false)
     private String employeeId;
 
+    @NotBlank(message = "First name is required")
+    @Size(min = 2, max = 50, message = "First name must be 2–50 characters")
     private String firstName;
+
+    @NotBlank(message = "Last name is required")
+    @Size(min = 2, max = 50, message = "Last name must be 2–50 characters")
     private String lastName;
+
+    @NotBlank(message = "Email is required")
+    @Email(message = "Invalid email format")
     private String email;
+
+    @NotBlank(message = "Phone number is required")
+    @Pattern(
+            regexp = "^[0-9]{10}$",
+            message = "Phone number must be 10 digits"
+    )
     private String phoneNumber;
+
+    @NotBlank(message = "Department is required")
     private String dept;
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
@@ -26,6 +45,8 @@ public class Employee {
     private List<Leave> leaves;
 
     public Employee() {}
+
+
 
     public Long getId() {
         return id;

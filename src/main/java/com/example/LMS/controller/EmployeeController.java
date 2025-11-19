@@ -2,6 +2,7 @@ package com.example.LMS.controller;
 
 import com.example.LMS.entity.Employee;
 import com.example.LMS.repository.EmployeeRepository;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,15 +19,19 @@ public class EmployeeController {
         this.repo = repo;
     }
 
+
     @GetMapping
     public ResponseEntity<List<Employee>> getAll() {
         return ResponseEntity.ok(repo.findAll());
     }
 
+
     @PostMapping
-    public ResponseEntity<Employee> create(@RequestBody Employee emp) {
-        return ResponseEntity.ok(repo.save(emp));
+    public ResponseEntity<Employee> create(@Valid @RequestBody Employee emp) {
+        Employee saved = repo.save(emp);
+        return ResponseEntity.ok(saved);
     }
+
 
     @GetMapping("/{employeeId}")
     public ResponseEntity<Employee> getByEmployeeId(@PathVariable String employeeId) {
@@ -35,27 +40,34 @@ public class EmployeeController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+
     @PutMapping("/{employeeId}")
-    public ResponseEntity<Employee> update(@PathVariable String employeeId,
-                                           @RequestBody Employee details) {
+    public ResponseEntity<Employee> update(
+            @PathVariable String employeeId,
+            @Valid @RequestBody Employee details) {
+
         return repo.findByEmployeeId(employeeId)
                 .map(existing -> {
+
                     existing.setFirstName(details.getFirstName());
                     existing.setLastName(details.getLastName());
                     existing.setEmail(details.getEmail());
                     existing.setDept(details.getDept());
                     existing.setPhoneNumber(details.getPhoneNumber());
-                    return ResponseEntity.ok(repo.save(existing));
-                })
-                .orElse(ResponseEntity.notFound().build());
+
+                    Employee updated = repo.save(existing);
+                    return ResponseEntity.ok(updated);
+
+                }).orElse(ResponseEntity.notFound().build());
     }
+
 
     @DeleteMapping("/{employeeId}")
     public ResponseEntity<Object> delete(@PathVariable String employeeId) {
         return repo.findByEmployeeId(employeeId)
                 .map(existing -> {
                     repo.delete(existing);
-                    return ResponseEntity.<Void>noContent().build();
+                    return ResponseEntity.noContent().build();
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
